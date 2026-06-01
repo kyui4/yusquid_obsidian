@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,15 +23,13 @@ jobs:
       - name: Build Static HTML
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: milanmk/actions-file-deployer@master
-        with:
-          remote-protocol: ftp
-          remote-host: ${{ secrets.FTP_HOST }}
-          remote-port: 21
-          remote-user: ${{ secrets.FTP_USER }}
-          remote-password: ${{ secrets.FTP_PASS }}
-          local-path: ./out/
-          remote-path: /public_html/2t8.net/yusquid/
-          sync: true
-          ftp-mirror-options: '-R'
+      - name: Deploy to Coreserver
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }} <<EOF
+          set ftp:ssl-allow no
+          set mirror:use-cache no
+          cd /public_html/2t8.net/yusquid/
+          mirror -R --delete ./out/ .
+          quit
+          EOF
