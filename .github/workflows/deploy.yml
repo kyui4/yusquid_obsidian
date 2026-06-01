@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -26,6 +28,12 @@ jobs:
       - name: Deploy via FTP
         uses: milanmk/actions-file-deployer@master
         with:
-          remote-url: ftp://${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_HOST }}/public_html/2t8.net/yusquid/
-          local-dir: ./out/
-          args: --delete
+          remote-protocol: ftp
+          remote-host: ${{ secrets.FTP_HOST }}
+          remote-port: 21
+          remote-user: ${{ secrets.FTP_USER }}
+          remote-password: ${{ secrets.FTP_PASS }}
+          local-path: ./out/
+          remote-path: /public_html/2t8.net/yusquid/
+          sync: true
+          ftp-mirror-options: '-R'
