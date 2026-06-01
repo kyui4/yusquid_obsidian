@@ -24,8 +24,8 @@ jobs:
     - name: FTP Deploy to Coreserver
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASS }}
         local-dir: ./out/ # ビルドされた静的ファイルが入るディレクトリ（テンプレートの仕様に合わせて dist 等に変更）
         server-dir: /public_html/2t8.net/yusquid/ # コアサーバー上の公開したいディレクトリパス
