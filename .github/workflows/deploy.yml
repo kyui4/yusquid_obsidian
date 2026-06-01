@@ -9,10 +9,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Template
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js and Dependencies
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -23,12 +23,9 @@ jobs:
       - name: Build Static HTML
         run: npm run build
 
-      - name: FTP Deploy to Coreserver
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy via FTP
+        uses: milanmk/actions-file-deployer@master
         with:
-          server: m11.coreserver.jp
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
+          remote-url: ftp://${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_HOST }}/public_html/2t8.net/yusquid/
           local-dir: ./out/
-          server-dir: ./public_html/2t8.net/yusquid/
-          port: 21
+          args: --delete
