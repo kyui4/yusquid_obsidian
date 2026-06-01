@@ -1,0 +1,31 @@
+name: Deploy Digital Garden to Coreserver
+
+on:
+  push:
+    branches:
+      - main # または master。Obsidianからプッシュされるブランチ名
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Template
+      uses: actions/checkout@v3
+
+    - name: Install Node.js and Dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - run: npm install
+
+    - name: Build Static HTML
+      run: npm run build # テンプレートに応じたビルドコマンド。通常は静的ファイルが out や dist ディレクトリに出力されます
+
+    - name: FTP Deploy to Coreserver
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./out/ # ビルドされた静的ファイルが入るディレクトリ（テンプレートの仕様に合わせて dist 等に変更）
+        server-dir: /public_html/2t8.net/yusquid/ # コアサーバー上の公開したいディレクトリパス
